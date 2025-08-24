@@ -6,14 +6,13 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 
-// Dynamically import the ReactApexChart component
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
 export default function MonthlySalesChart() {
   const options: ApexOptions = {
-    colors: ["#465fff"],
+    colors: ["#465fff", "#ff4560"], // blu per entrata, rosso per uscita
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "bar",
@@ -40,25 +39,11 @@ export default function MonthlySalesChart() {
     },
     xaxis: {
       categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec",
       ],
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
     },
     legend: {
       show: true,
@@ -67,36 +52,33 @@ export default function MonthlySalesChart() {
       fontFamily: "Outfit",
     },
     yaxis: {
-      title: {
-        text: undefined,
-      },
+      title: { text: undefined },
     },
     grid: {
-      yaxis: {
-        lines: {
-          show: true,
-        },
-      },
+      yaxis: { lines: { show: true } },
     },
     fill: {
       opacity: 1,
     },
-
     tooltip: {
-      x: {
-        show: false,
-      },
+      x: { show: false },
       y: {
         formatter: (val: number) => `${val}`,
       },
     },
   };
+
   const series = [
     {
-      name: "Sales",
+      name: "Entrata",
       data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
     },
+    {
+      name: "Uscita",
+      data: [120, 250, 180, 210, 160, 175, 200, 90, 180, 320, 260, 100],
+    },
   ];
+
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
