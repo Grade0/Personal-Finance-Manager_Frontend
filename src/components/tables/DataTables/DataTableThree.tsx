@@ -21,115 +21,104 @@ import Button from "../../ui/button/Button";
 const tableRowData = [
   {
     id: 1,
-    user: {
-      name: "Lindsey Curtis",
-      email: "demoemail@gmail.com",
-    },
-    position: "Sales Assistant",
-    location: "Edinburgh",
-    status: "Hired",
-    salary: "$89,500",
+    name: "iCloud+",
+    description: "Pagamento tramite Paypal",
+    method: "Unicredit",
+    category: "Abbonamento",
+    date: "01/08/2025",
+    status: "Conciliato",
+    amount: "€ 2,99",
   },
   {
     id: 2,
-    user: {
-      name: "Kaiya George",
-      email: "demoemail@gmail.com",
-    },
-    position: "Chief Executive Officer",
-    location: "London",
-    status: "In Progress",
-    salary: "$105,000",
+    name: "Netflix",
+    description: "Pagamento mensile carta di credito",
+    method: "Intesa Sanpaolo",
+    category: "Abbonamento",
+    date: "03/08/2025",
+    status: "Conciliato",
+    amount: "€ 9,99",
   },
   {
     id: 3,
-    user: {
-      name: "Zain Geidt",
-      email: "demoemail@gmail.com",
-    },
-    position: "Junior Technical Author",
-    location: "San Francisco",
-    status: "In Progress",
-    salary: "$120,000",
+    name: "Esselunga",
+    description: "Spesa alimentare settimanale",
+    method: "Carta di debito",
+    category: "Spesa",
+    date: "05/08/2025",
+    status: "Conciliato",
+    amount: "€ 75,45",
   },
   {
     id: 4,
-    user: {
-      name: "Abram Schleifer",
-      email: "demoemail@gmail.com",
-    },
-    position: "Software Engineer",
-    location: "New York",
-    status: "Hired",
-    salary: "$95,000",
+    name: "Trenitalia",
+    description: "Biglietto treno Roma-Milano",
+    method: "Carta di credito",
+    category: "Trasporti",
+    date: "10/08/2025",
+    status: "Non conciliato",
+    amount: "€ 49,90",
   },
   {
     id: 5,
-    user: {
-      name: "Carla George",
-      email: "demoemail@gmail.com",
-    },
-    position: "Integration Specialist",
-    location: "Chicago",
-    status: "Pending",
-    salary: "$80,000",
+    name: "Spotify",
+    description: "Abbonamento mensile streaming musicale",
+    method: "Paypal",
+    category: "Abbonamento",
+    date: "12/08/2025",
+    status: "Non conciliato",
+    amount: "€ 4,99",
   },
   {
     id: 6,
-    user: {
-      name: "Emery Culhane",
-      email: "demoemail@gmail.com",
-    },
-    position: "Pre-Sales Support",
-    location: "Los Angeles",
-    status: "Hired",
-    salary: "$75,000",
+    name: "H&M",
+    description: "Acquisto abbigliamento estivo",
+    method: "Carta di credito",
+    category: "Abbigliamento",
+    date: "16/08/2025",
+    status: "Non conciliato",
+    amount: "€ 89,50",
   },
   {
     id: 7,
-    user: {
-      name: "Livia Donin",
-      email: "demoemail@gmail.com",
-    },
-    position: "Sales Assistant",
-    location: "Seattle",
-    status: "Hired",
-    salary: "$88,000",
+    name: "Enel Energia",
+    description: "Bolletta elettrica mensile",
+    method: "RID",
+    category: "Utenze",
+    date: "18/08/2025",
+    status: "Non conciliato",
+    amount: "€ 65,20",
   },
   {
     id: 8,
-    user: {
-      name: "Lincoln Herwitz",
-      email: "demoemail@gmail.com",
-    },
-    position: "Senior Javascript Developer",
-    location: "Austin",
-    age: 29,
-    status: "Hired",
-    salary: "$92,000",
+    name: "Amazon",
+    description: "Acquisto libro e accessori elettronici",
+    method: "Carta di debito",
+    category: "E-commerce",
+    date: "20/08/2025",
+    status: "Non conciliato",
+    amount: "€ 42,75",
   },
   {
     id: 9,
-    user: {
-      name: "Miracle Bator",
-      email: "demoemail@gmail.com",
-    },
-    position: "Software Engineer",
-    location: "Boston",
-    status: "In Progress",
-    salary: "$115,000",
+    name: "McDonald's",
+    description: "Pranzo veloce",
+    method: "Carta prepagata",
+    category: "Ristoranti",
+    date: "22/08/2025",
+    status: "Non conciliato",
+    amount: "€ 15,60",
   },
   {
     id: 10,
-    user: {
-      name: "Ekstrom Bothman",
-      email: "demoemail@gmail.com",
-    },
-    position: "Sales Assistant",
-    location: "Denver",
-    status: "In Progress",
-    salary: "$70,000",
-  },
+    name: "Assicurazione auto",
+    description: "Pagamento semestrale",
+    method: "Bonifico",
+    category: "Assicurazioni",
+    date: "30/08/2025",
+    status: "Non riconosciuto",
+    amount: "€ 320,00",
+  }
 ];
 
 export default function DataTableThree() {
@@ -279,7 +268,7 @@ export default function DataTableThree() {
                     <div className="flex gap-3">
                       <Checkbox checked={isChecked} onChange={setIsChecked} />
                       <span className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                        User
+                        Voce
                       </span>
                     </div>
                     <button className="flex flex-col gap-0.5">
@@ -294,7 +283,7 @@ export default function DataTableThree() {
                 >
                   <div className="flex items-center justify-between cursor-pointer">
                     <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                      Position
+                      Descrizione
                     </p>
                     <button className="flex flex-col gap-0.5">
                       <AngleUpIcon className="text-gray-300 dark:text-gray-700" />
@@ -308,7 +297,7 @@ export default function DataTableThree() {
                 >
                   <div className="flex items-center justify-between cursor-pointer">
                     <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                      Salary
+                      Metodo
                     </p>
                     <button className="flex flex-col gap-0.5">
                       <AngleUpIcon className="text-gray-300 dark:text-gray-700" />
@@ -322,7 +311,21 @@ export default function DataTableThree() {
                 >
                   <div className="flex items-center justify-between cursor-pointer">
                     <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                      Office
+                      Categoria
+                    </p>
+                    <button className="flex flex-col gap-0.5">
+                      <AngleUpIcon className="text-gray-300 dark:text-gray-700" />
+                      <AngleDownIcon className="text-gray-300 dark:text-gray-700" />
+                    </button>
+                  </div>
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
+                >
+                  <div className="flex items-center justify-between cursor-pointer">
+                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
+                      Data
                     </p>
                     <button className="flex flex-col gap-0.5">
                       <AngleUpIcon className="text-gray-300 dark:text-gray-700" />
@@ -337,6 +340,20 @@ export default function DataTableThree() {
                   <div className="flex items-center justify-between cursor-pointer">
                     <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
                       Status
+                    </p>
+                    <button className="flex flex-col gap-0.5">
+                      <AngleUpIcon className="text-gray-300 dark:text-gray-700" />
+                      <AngleDownIcon className="text-gray-300 dark:text-gray-700" />
+                    </button>
+                  </div>
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
+                >
+                  <div className="flex items-center justify-between cursor-pointer">
+                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
+                      Importo
                     </p>
                     <button className="flex flex-col gap-0.5">
                       <AngleUpIcon className="text-gray-300 dark:text-gray-700" />
@@ -369,37 +386,40 @@ export default function DataTableThree() {
                         <Checkbox checked={isChecked} onChange={setIsChecked} />
                       </div>
                       <div>
-                        <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          {item.user.name}
-                        </p>
-                        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                          {item.user.email}
+                        <span>
+                          {item.name}
                         </span>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap">
-                    <span> {item.position}</span>
+                  <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                    {item.description}
                   </TableCell>
                   <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                    {item.salary}
+                    {item.method}
                   </TableCell>
                   <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                    {item.location}
+                    {item.category}
+                  </TableCell>
+                  <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                    {item.date}
                   </TableCell>
                   <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
                     <Badge
                       size="sm"
                       color={
-                        item.status === "Hired"
+                        item.status === "Conciliato"
                           ? "success"
-                          : item.status === "In Progress"
+                          : item.status === "Non conciliato"
                           ? "warning"
                           : "error"
                       }
                     >
                       {item.status}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                    {item.amount}
                   </TableCell>
                   <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
                     <div className="flex items-center w-full gap-2">

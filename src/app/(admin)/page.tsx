@@ -11,6 +11,7 @@ import BasicTableOne from "@/components/tables/BasicTableOne";
 import ComponentCard from "@/components/common/ComponentCard";
 import PieChartTwo from "@/components/charts/pie/PieChartTwo";
 import DataTableThree from "@/components/tables/DataTables/DataTableThree";
+import IncomeTable from "@/components/tables/IncomeTable";
 import WatchList from "@/components/stocks/WatchList";
 
 
@@ -32,35 +33,32 @@ export default function Ecommerce() {
           <MonthlySalesChart />
         </div>
 
-        <div className="col-span-12 xl:col-span-6">
+        <div className="col-span-12 space-y-6 xl:col-span-6">
+          <ComponentCard title="Totale Entrate per fonte">
+            <IncomeTable />
+          </ComponentCard>
+
           <MonthlyTarget />
 
           <ComponentCard title="Spese per categoria">
-          <PieChartTwo />
-        </ComponentCard>
+            <PieChartTwo />
+          </ComponentCard>
 
-        <WatchList />
+          <WatchList />
         </div>
 
         <div className="ol-span-12 xl:col-span-6 space-y-6">
-        <ComponentCard title="Totale spese per categoria">
-          <BasicTableOne />
-        </ComponentCard>
-      </div>
+          <ComponentCard title="Totale spese per categoria">
+            <BasicTableOne />
+          </ComponentCard>
+        </div>
 
         <div className="col-span-12">
-          <ComponentCard title="Data Table 3">
+          <ComponentCard title="Transazioni del mese">
             <DataTableThree />
           </ComponentCard>
         </div>
 
-        <div className="col-span-12 xl:col-span-5">
-          <DemographicCard />
-        </div>
-
-        <div className="col-span-12 xl:col-span-7">
-          <RecentOrders />
-        </div>
       </div>
     </div>
   );

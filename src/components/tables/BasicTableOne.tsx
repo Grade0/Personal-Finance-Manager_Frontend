@@ -18,31 +18,29 @@ interface Order {
 
 // Define the table data using the interface
 const tableData: Order[] = [
-  {
-    id: 1,
-    categoryName: "Affitto",
-    totalExpense: "3.9K",
-  },
-  {
-    id: 2,
-    categoryName: "Cibo",
-    totalExpense: "3.9K",
-  },
-  {
-    id: 3,
-    categoryName: "Spesa",
-    totalExpense: "3.9K",
-  },
-  {
-    id: 4,
-    categoryName: "Macchina",
-    totalExpense: "3.9K",
-  },
-  {
-    id: 5,
-    categoryName: "Intratenimento",
-    totalExpense: "3.9K",
-  },
+  { id: 1, categoryName: "Affitto", totalExpense: "1000.00" },
+  { id: 2, categoryName: "Spesa", totalExpense: "300.00" },
+  { id: 3, categoryName: "Trasporti", totalExpense: "100.00" },
+  { id: 4, categoryName: "Utenze", totalExpense: "200.00" },
+  { id: 5, categoryName: "Intrattenimento", totalExpense: "100.00" },
+  { id: 6, categoryName: "Ristoranti", totalExpense: "1500.00" },
+  { id: 7, categoryName: "Abbigliamento", totalExpense: "900.00" },
+  { id: 8, categoryName: "Macchina", totalExpense: "700.00" },
+  { id: 9, categoryName: "Salute", totalExpense: "1000.00" },
+  { id: 10, categoryName: "Istruzione", totalExpense: "1300.00" },
+  { id: 11, categoryName: "Viaggi", totalExpense: "2000.00" },
+  { id: 12, categoryName: "Elettronica", totalExpense: "500.00" },
+  { id: 13, categoryName: "Regali", totalExpense: "400.00" },
+  { id: 14, categoryName: "Sport", totalExpense: "300.00" },
+  { id: 15, categoryName: "Libri", totalExpense: "200.00" },
+  { id: 16, categoryName: "Cura personale", totalExpense: "600.00" },
+  { id: 17, categoryName: "Abbonamento", totalExpense: "500.00" },
+  { id: 18, categoryName: "Ricariche telefoniche", totalExpense: "200.00" },
+  { id: 19, categoryName: "Tasse", totalExpense: "1800.00" },
+  { id: 20, categoryName: "Mobili", totalExpense: "50.00" },
+  { id: 21, categoryName: "Manutenzione casa", totalExpense: "1800.00" },
+  { id: 22, categoryName: "Anticipo per altri", totalExpense: "1800.00" },
+  { id: 23, categoryName: "Altro", totalExpense: "400.00" },
 ];
 
 export default function BasicTableOne() {
@@ -56,13 +54,13 @@ export default function BasicTableOne() {
               <TableRow>
                 <TableCell
                   isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                  className="px-5 py-3 font-medium text-gray-800 text-start text-theme-xs dark:text-gray-400"
                 >
                   Categoria
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                  className="px-5 py-3 font-medium text-gray-800 text-start text-theme-xs dark:text-gray-400"
                 >
                   Totale speso
                 </TableCell>

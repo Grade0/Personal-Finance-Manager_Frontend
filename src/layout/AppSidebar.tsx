@@ -17,7 +17,7 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
-import { ChartNoAxesCombined } from 'lucide-react';
+import { ChartNoAxesCombined, ClipboardList } from 'lucide-react';
 import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
@@ -37,6 +37,14 @@ const navItems: NavItem[] = [
     icon: <ChartNoAxesCombined />,
     name: "Analytics",
     path: "/analytics",
+  },
+  {
+    name: "Transactions",
+    icon: <ClipboardList />,
+    subItems: [
+      { name: "Add new", path: "/add-transaction", pro: false },
+      { name: "See all", path: "/form-elements", pro: false }
+    ],
   },
   {
     icon: <CalenderIcon />,
