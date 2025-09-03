@@ -6,6 +6,9 @@ import Select from "../form/Select";
 import TextArea from "../form/input/TextArea";
 import Button from "../ui/button/Button";
 import DatePicker from "@/components/form/date-picker";
+import DropzoneComponent from "@/components/form/form-elements/DropZone";
+import ToggleSwitch from "@/components/form/form-elements/ToggleSwitch";
+import { ChevronDown } from "lucide-react";
 
 export default function TransactionForm() {
   const [message, setMessage] = useState("");
@@ -51,27 +54,37 @@ export default function TransactionForm() {
               </div>{" "}
               <div>
                 <Label>Categoria</Label>
-                <Select
-                  options={categories}
-                  placeholder="Select a category"
-                  onChange={handleSelectChange}
-                  defaultValue=""
-                />
+                <div className="relative">
+                  <Select
+                    options={categories}
+                    placeholder="Select a category"
+                    onChange={handleSelectChange}
+                    defaultValue=""
+                  />
+                  <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+                    <ChevronDown/>
+                  </span>
+                </div>
               </div>
               <div>
                 <Label>Metodo</Label>
-                <Select
-                  options={methods}
-                  placeholder="Select brand"
-                  onChange={handleSelectChange}
-                  defaultValue=""
-                />
+                <div className="relative">
+                  <Select
+                    options={methods}
+                    placeholder="Select a method"
+                    onChange={handleSelectChange}
+                    defaultValue=""
+                  />
+                  <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+                    <ChevronDown/>
+                  </span>
+                </div>
               </div>{" "}
               <div>
                 <DatePicker
                   id="dob-picker"
                   label="Data della transazione"
-                  placeholder="Select an option"
+                  placeholder="Select a date"
                   onChange={(dates, currentDateString) => {
                     // Handle your logic
                     console.log({ dates, currentDateString });
@@ -89,39 +102,7 @@ export default function TransactionForm() {
                 
               <div className="col-span-full">
                 <Label>Receipt</Label>
-                <label
-                  htmlFor="product-image"
-                  className="shadow-theme-xs group hover:border-brand-500 block cursor-pointer rounded-lg border-2 border-dashed border-gray-300 transition dark:hover:border-brand-400 dark:border-gray-800"
-                >
-                  <div className="flex justify-center p-10">
-                    <div className="flex max-w-[260px] flex-col items-center gap-4">
-                      <div className="inline-flex h-13 w-13 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition dark:border-gray-800 dark:text-gray-400">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <path
-                            d="M20.0004 16V18.5C20.0004 19.3284 19.3288 20 18.5004 20H5.49951C4.67108 20 3.99951 19.3284 3.99951 18.5V16M12.0015 4L12.0015 16M7.37454 8.6246L11.9994 4.00269L16.6245 8.6246"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                      <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                        <span className="font-medium text-gray-800 dark:text-white/90">
-                          Click to upload
-                        </span>
-                        or drag and drop SVG, PNG, JPG or GIF (MAX. 800x400px)
-                      </p>
-                    </div>
-                  </div>
-                  <input type="file" id="product-image" className="hidden" />
-                </label>
+                <DropzoneComponent />
               </div>
               
             </div>

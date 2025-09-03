@@ -42,8 +42,8 @@ const navItems: NavItem[] = [
     name: "Transactions",
     icon: <ClipboardList />,
     subItems: [
-      { name: "Add new", path: "/add-transaction", pro: false },
-      { name: "See all", path: "/form-elements", pro: false }
+      { name: "Aggiungi transazione", path: "/add-transaction", pro: false },
+      { name: "Storico transazioni", path: "/full-transaction", pro: false }
     ],
   },
   {
