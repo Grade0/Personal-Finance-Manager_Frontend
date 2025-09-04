@@ -8,9 +8,31 @@ import Button from "../ui/button/Button";
 import DatePicker from "@/components/form/date-picker";
 import DropzoneComponent from "@/components/form/form-elements/DropZone";
 import ToggleSwitch from "@/components/form/form-elements/ToggleSwitch";
+import FileInput from "./input/FileInput";
+import Radio from "./input/Radio";
+import Switch from "./switch/Switch";
+
+
 import { ChevronDown } from "lucide-react";
 
 export default function TransactionForm() {
+  const [selectedOption, setSelectedOption] = useState<string>("expense");
+  const handleRadioChange = (value: string) => {
+    setSelectedOption(value);
+    console.log("Selected:", value);
+  }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log("Selected file:", file.name);
+    }
+  };
+
+  const handleSwitchChange = (checked: boolean) => {
+    console.log("Switch is now:", checked ? "ON" : "OFF");
+  };
+
   const [message, setMessage] = useState("");
   const categories = [
     { value: "Affitto", label: "Laptop" },
@@ -34,6 +56,7 @@ export default function TransactionForm() {
     { value: "3", label: "White" },
     { value: "4", label: "Gray" },
   ];
+
   const handleSelectChange = (value: string) => {
     console.log("Selected value:", value);
   };
@@ -48,6 +71,37 @@ export default function TransactionForm() {
         <div className="p-4 sm:p-6 dark:border-gray-800">
           <form>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div className="flex items-center gap-3">
+                <Label className="m-0">Tipo Transazione:</Label>
+                <div className="flex flex-wrap items-center gap-4">
+                  <Radio
+                    id="Free"
+                    name="roleSelect"
+                    value="income"
+                    label="Entrata"
+                    checked={selectedOption === "income"}
+                    onChange={handleRadioChange}
+                  />
+                  <Radio
+                    id="Premium"
+                    name="roleSelect"
+                    value="expense"
+                    label="Uscita"
+                    checked={selectedOption === "expense"}
+                    onChange={handleRadioChange}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Label>Conciliazione bancaria: </Label>
+                <Switch
+                  label="Conciliato"
+                  defaultChecked={false}
+                  onChange={handleSwitchChange}
+                />
+              </div>
+
               <div>
                 <Label>Voce</Label>
                 <Input placeholder="Enter product name" />
@@ -91,20 +145,32 @@ export default function TransactionForm() {
                   }}
                 />
               </div>
-              <div className="col-span-full">
-                <Label>Description</Label>
+              <div>
+                <Label>Descrizione</Label>
                 <TextArea
                   value={message}
                   onChange={(value) => setMessage(value)}
                   rows={6}
                 />
               </div>
-                
-              <div className="col-span-full">
-                <Label>Receipt</Label>
-                <DropzoneComponent />
+
+              <div className="flex flex-col gap-y-8">
+                <div>
+                  <Label>Upload file</Label>
+                  <FileInput onChange={handleFileChange} className="custom-class" />  
+                </div>
+                <div className="flex items-center gap-3">
+                  <Label>Conciliazione bancaria: </Label>
+                  <Switch
+                    label="Conciliato"
+                    defaultChecked={false}
+                    onChange={handleSwitchChange}
+                  />
+                </div>
               </div>
-              
+
+
+
             </div>
           </form>
         </div>
