@@ -1,13 +1,16 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import TableDropdown from "@/components/common/TableDropdown";
+import ConciliazioneFilter from "./ConciliazioneFilter";
+import { FileCheck, Trash2, Upload } from 'lucide-react';
 import Link from "next/link";
+import Pagination from "./Pagination";
 
 interface Transaction {
   id: number;
   name: string;
   description: string;
-  method: string;
+  account: string;
   category: number;
   date: string;
   status: "Conciliato" | "Non conciliato";
@@ -15,16 +18,16 @@ interface Transaction {
 }
 
 interface SortState {
-  key: "customer" | "email" | "amount";
+  key: "name" | "account" | "category" | "date" | "amount";
   asc: boolean;
 }
 
-const initialTransactions: Transaction[] = [
+const transactionData: Transaction[] = [
   {
     id: 1,
     name: "iCloud+",
     description: "Pagamento tramite Paypal",
-    method: "Unicredit",
+    account: "Unicredit",
     category: "Abbonamento",
     date: "01/08/2025",
     status: "Conciliato",
@@ -34,7 +37,7 @@ const initialTransactions: Transaction[] = [
     id: 2,
     name: "Netflix",
     description: "Pagamento mensile carta di credito",
-    method: "Intesa Sanpaolo",
+    account: "Intesa Sanpaolo",
     category: "Abbonamento",
     date: "03/08/2025",
     status: "Conciliato",
@@ -44,7 +47,7 @@ const initialTransactions: Transaction[] = [
     id: 3,
     name: "Esselunga",
     description: "Spesa alimentare settimanale",
-    method: "Carta di debito",
+    account: "Carta di debito",
     category: "Spesa",
     date: "05/08/2025",
     status: "Conciliato",
@@ -54,7 +57,7 @@ const initialTransactions: Transaction[] = [
     id: 4,
     name: "Trenitalia",
     description: "Biglietto treno Roma-Milano",
-    method: "Carta di credito",
+    account: "Carta di credito",
     category: "Trasporti",
     date: "10/08/2025",
     status: "Non conciliato",
@@ -64,7 +67,7 @@ const initialTransactions: Transaction[] = [
     id: 5,
     name: "Spotify",
     description: "Abbonamento mensile streaming musicale",
-    method: "Paypal",
+    account: "Paypal",
     category: "Abbonamento",
     date: "12/08/2025",
     status: "Non conciliato",
@@ -74,7 +77,7 @@ const initialTransactions: Transaction[] = [
     id: 6,
     name: "H&M",
     description: "Acquisto abbigliamento estivo",
-    method: "Carta di credito",
+    account: "Carta di credito",
     category: "Abbigliamento",
     date: "16/08/2025",
     status: "Non conciliato",
@@ -84,7 +87,7 @@ const initialTransactions: Transaction[] = [
     id: 7,
     name: "Enel Energia",
     description: "Bolletta elettrica mensile",
-    method: "RID",
+    account: "RID",
     category: "Utenze",
     date: "18/08/2025",
     status: "Non conciliato",
@@ -94,7 +97,7 @@ const initialTransactions: Transaction[] = [
     id: 8,
     name: "Amazon",
     description: "Acquisto libro e accessori elettronici",
-    method: "Carta di debito",
+    account: "Carta di debito",
     category: "E-commerce",
     date: "20/08/2025",
     status: "Non conciliato",
@@ -104,7 +107,7 @@ const initialTransactions: Transaction[] = [
     id: 9,
     name: "McDonald's",
     description: "Pranzo veloce",
-    method: "Carta prepagata",
+    account: "Carta prepagata",
     category: "Ristoranti",
     date: "22/08/2025",
     status: "Non conciliato",
@@ -114,7 +117,7 @@ const initialTransactions: Transaction[] = [
     id: 10,
     name: "Assicurazione auto",
     description: "Pagamento semestrale",
-    method: "Bonifico",
+    account: "Bonifico",
     category: "Assicurazioni",
     date: "30/08/2025",
     status: "Non riconosciuto",
@@ -123,21 +126,39 @@ const initialTransactions: Transaction[] = [
 ];
 
 const FullTransactions2: React.FC = () => {
-  const [transactions] = React.useState<Transaction[]>(initialTransactions);
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+
+  // Rows per page handler
+  const handleRowsPerPageChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
+    const newRowsPerPage = parseInt(e.target.value, 10); // Ensure base 10 parsing
+    setRowsPerPage(newRowsPerPage);
+    setCurrentPage(1); // Reset to first page when rows per page changes
+  };
+
+
+
+  const [transactions] = React.useState<Transaction[]>(transactionData);
   const [selected, setSelected] = React.useState<number[]>([]);
   const [sort, setSort] = React.useState<SortState>({
-    key: "customer",
-    asc: true,
+    key: "date",
+    asc: false,
   });
-  const [page, setPage] = React.useState<number>(1);
+
+  const [filterStatus, setFilterStatus] = useState<
+    "All" | "Conciliato" | "Non conciliato"
+  >("All");
+
+  const filteredTransactions: Transaction[] = useMemo(() => {
+    return filterStatus === "All"
+      ? transactions
+      : transactions.filter((transaction) => transaction.status === filterStatus);
+  }, [transactions, filterStatus]);
+
+  const [currentPage, setCurrentPage] = React.useState<number>(1);
   const [search, setSearch] = React.useState<string>("");
   const [filterDays, setFilterDays] = React.useState<string>("Last 7 Days");
-  const perPage: number = 10;
-
-  const totalPages: number = Math.ceil(transactions.length / perPage) || 1;
-  const startEntry: number =
-    transactions.length === 0 ? 0 : (page - 1) * perPage + 1;
-  const endEntry: number = Math.min(page * perPage, transactions.length);
 
   const sortedRows: Transaction[] = React.useMemo(() => {
     return [...transactions].sort((a, b) => {
@@ -155,14 +176,26 @@ const FullTransactions2: React.FC = () => {
     return sortedRows.filter(
       (row) =>
         row.name.toLowerCase().includes(search.toLowerCase()) ||
-        row.method.toLowerCase().includes(search.toLowerCase()) ||
+        row.account.toLowerCase().includes(search.toLowerCase()) ||
         row.category.toLowerCase().includes(search.toLowerCase())
     );
   }, [sortedRows, search]);
 
+  const totalEntries = filteredRows.length; 
+  const totalPages: number = Math.ceil(transactions.length / rowsPerPage) || 1;
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = Math.min(startIndex + rowsPerPage, totalEntries);
+
+  const handlePageChange = (page: number) => {
+    // setCurrentPage(page);
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   const paginatedRows: Transaction[] = filteredRows.slice(
-    (page - 1) * perPage,
-    page * perPage
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
   );
 
   const toggleSelectAll = (): void => {
@@ -187,7 +220,7 @@ const FullTransactions2: React.FC = () => {
     updateSelectAll();
   };
 
-  const sortBy = (key: "customer" | "email" | "amount"): void => {
+  const sortBy = (key: "name" | "account" | "category" | "date" | "amount"): void => {
     setSort((prev) => ({
       key,
       asc: prev.key === key ? !prev.asc : true,
@@ -208,17 +241,64 @@ const FullTransactions2: React.FC = () => {
   };
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div className="text-sm overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Transactions
-          </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Your most recent transactions list
-          </p>
+        <div className="flex items-center gap-3">
+          <span className="text-gray-500 dark:text-gray-400"> Show </span>
+          <div className="relative z-20 bg-transparent">
+            <select
+              className="w-full py-2 pl-3 pr-8 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-9 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+            >
+              <option
+                value="10"
+                className="text-gray-500 dark:bg-gray-900 dark:text-gray-400"
+              >
+                10
+              </option>
+              <option
+                value="8"
+                className="text-gray-500 dark:bg-gray-900 dark:text-gray-400"
+              >
+                8
+              </option>
+              <option
+                value="5"
+                className="text-gray-500 dark:bg-gray-900 dark:text-gray-400"
+              >
+                5
+              </option>
+            </select>
+            <span className="absolute z-30 text-gray-500 -translate-y-1/2 right-2 top-1/2 dark:text-gray-400">
+              <svg
+                className="stroke-current"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3.8335 5.9165L8.00016 10.0832L12.1668 5.9165"
+                  stroke=""
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </div>
+          <span className="text-gray-500 dark:text-gray-400"> entries </span>
         </div>
         <div className="flex gap-3.5">
+
+          <ConciliazioneFilter
+            filterStatus={filterStatus}
+            setFilterStatus={setFilterStatus}
+            setCurrentPage={setCurrentPage}
+          />
+
           <div className="hidden flex-col gap-3 sm:flex sm:flex-row sm:items-center">
             <div className="relative">
               <span className="absolute top-1/2 left-4 -translate-y-1/2 text-gray-500 dark:text-gray-400">
@@ -262,24 +342,21 @@ const FullTransactions2: React.FC = () => {
                 <option>Last 30 Days</option>
               </select>
             </div>
+
             <div>
-              <button className="shadow-theme-xs flex h-11 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <path
-                    d="M16.6661 13.3333V15.4166C16.6661 16.1069 16.1064 16.6666 15.4161 16.6666H4.58203C3.89168 16.6666 3.33203 16.1069 3.33203 15.4166V13.3333M10.0004 3.33325L10.0004 13.3333M6.14456 7.18708L9.9986 3.33549L13.8529 7.18708"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Export CSV
+              <button className="text-gray-500 hover:text-success-500 dark:text-gray-400 dark:hover:text-success-500">
+                <FileCheck />
+              </button>
+            </div>
+            <div>
+              <button className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500">
+                <Trash2 />
+              </button>
+            </div>
+
+            <div>
+              <button className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90">
+                <Upload />
               </button>
             </div>
           </div>
@@ -334,7 +411,7 @@ const FullTransactions2: React.FC = () => {
                   </label>
                   <div
                   className="flex cursor-pointer items-center gap-3"
-                  onClick={() => sortBy("customer")}
+                  onClick={() => sortBy("name")}
                 >
                   <p className="text-theme-xs font-medium text-gray-500 dark:text-gray-400">
                     Voce
@@ -342,7 +419,7 @@ const FullTransactions2: React.FC = () => {
                   <span className="flex flex-col gap-0.5">
                     <svg
                       className={
-                        sort.key === "customer" && sort.asc
+                        sort.key === "name" && sort.asc
                           ? "text-gray-800 dark:text-gray-400"
                           : "text-gray-300"
                       }
@@ -359,7 +436,7 @@ const FullTransactions2: React.FC = () => {
                     </svg>
                     <svg
                       className={
-                        sort.key === "customer" && !sort.asc
+                        sort.key === "name" && !sort.asc
                           ? "text-gray-800 dark:text-gray-400"
                           : "text-gray-300"
                       }
@@ -386,15 +463,15 @@ const FullTransactions2: React.FC = () => {
               <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
                 <div
                   className="flex cursor-pointer items-center gap-3"
-                  onClick={() => sortBy("email")}
+                  onClick={() => sortBy("account")}
                 >
                   <p className="text-theme-xs font-medium text-gray-500 dark:text-gray-400">
-                    Metodo
+                    Conto
                   </p>
                   <span className="flex flex-col gap-0.5">
                     <svg
                       className={
-                        sort.key === "email" && sort.asc
+                        sort.key === "account" && sort.asc
                           ? "text-gray-800 dark:text-gray-400"
                           : "text-gray-300"
                       }
@@ -411,7 +488,7 @@ const FullTransactions2: React.FC = () => {
                     </svg>
                     <svg
                       className={
-                        sort.key === "email" && !sort.asc
+                        sort.key === "account" && !sort.asc
                           ? "text-gray-800 dark:text-gray-400"
                           : "text-gray-300"
                       }
@@ -432,10 +509,106 @@ const FullTransactions2: React.FC = () => {
               <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
                 <div
                   className="flex cursor-pointer items-center gap-3"
-                  onClick={() => sortBy("amount")}
+                  onClick={() => sortBy("category")}
                 >
                   <p className="text-theme-xs font-medium text-gray-500 dark:text-gray-400">
                     Categoria
+                  </p>
+                  <span className="flex flex-col gap-0.5">
+                    <svg
+                      className={
+                        sort.key === "category" && sort.asc
+                          ? "text-gray-800 dark:text-gray-400"
+                          : "text-gray-300"
+                      }
+                      width="8"
+                      height="5"
+                      viewBox="0 0 8 5"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.40962 0.585167C4.21057 0.300808 3.78943 0.300807 3.59038 0.585166L1.05071 4.21327C0.81874 4.54466 1.05582 5 1.46033 5H6.53967C6.94418 5 7.18126 4.54466 6.94929 4.21327L4.40962 0.585167Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <svg
+                      className={
+                        sort.key === "category" && !sort.asc
+                          ? "text-gray-800 dark:text-gray-400"
+                          : "text-gray-300"
+                      }
+                      width="8"
+                      height="5"
+                      viewBox="0 0 8 5"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.40962 4.41483C4.21057 4.69919 3.78943 4.69919 3.59038 4.41483L1.05071 0.786732C0.81874 0.455343 1.05582 0 1.46033 0H6.53967C6.94418 0 7.18126 0.455342 6.94929 0.786731L4.40962 4.41483Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                <div
+                  className="flex cursor-pointer items-center gap-3"
+                  onClick={() => sortBy("date")}
+                >
+                  <p className="text-theme-xs font-medium text-gray-500 dark:text-gray-400">
+                    Data
+                  </p>
+                  <span className="flex flex-col gap-0.5">
+                    <svg
+                      className={
+                        sort.key === "date" && sort.asc
+                          ? "text-gray-800 dark:text-gray-400"
+                          : "text-gray-300"
+                      }
+                      width="8"
+                      height="5"
+                      viewBox="0 0 8 5"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.40962 0.585167C4.21057 0.300808 3.78943 0.300807 3.59038 0.585166L1.05071 4.21327C0.81874 4.54466 1.05582 5 1.46033 5H6.53967C6.94418 5 7.18126 4.54466 6.94929 4.21327L4.40962 0.585167Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <svg
+                      className={
+                        sort.key === "date" && !sort.asc
+                          ? "text-gray-800 dark:text-gray-400"
+                          : "text-gray-300"
+                      }
+                      width="8"
+                      height="5"
+                      viewBox="0 0 8 5"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.40962 4.41483C4.21057 4.69919 3.78943 4.69919 3.59038 4.41483L1.05071 0.786732C0.81874 0.455343 1.05582 0 1.46033 0H6.53967C6.94418 0 7.18126 0.455342 6.94929 0.786731L4.40962 4.41483Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </span>
+                </div>
+
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                Status
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                <div
+                  className="flex cursor-pointer items-center gap-3"
+                  onClick={() => sortBy("amount")}
+                >
+                  <p className="text-theme-xs font-medium text-gray-500 dark:text-gray-400">
+                    Importo
                   </p>
                   <span className="flex flex-col gap-0.5">
                     <svg
@@ -474,108 +647,15 @@ const FullTransactions2: React.FC = () => {
                     </svg>
                   </span>
                 </div>
-              </th>
-              <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                <div
-                  className="flex cursor-pointer items-center gap-3"
-                  onClick={() => sortBy("email")}
-                >
-                  <p className="text-theme-xs font-medium text-gray-500 dark:text-gray-400">
-                    Data
-                  </p>
-                  <span className="flex flex-col gap-0.5">
-                    <svg
-                      className={
-                        sort.key === "email" && sort.asc
-                          ? "text-gray-800 dark:text-gray-400"
-                          : "text-gray-300"
-                      }
-                      width="8"
-                      height="5"
-                      viewBox="0 0 8 5"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4.40962 0.585167C4.21057 0.300808 3.78943 0.300807 3.59038 0.585166L1.05071 4.21327C0.81874 4.54466 1.05582 5 1.46033 5H6.53967C6.94418 5 7.18126 4.54466 6.94929 4.21327L4.40962 0.585167Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    <svg
-                      className={
-                        sort.key === "email" && !sort.asc
-                          ? "text-gray-800 dark:text-gray-400"
-                          : "text-gray-300"
-                      }
-                      width="8"
-                      height="5"
-                      viewBox="0 0 8 5"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4.40962 4.41483C4.21057 4.69919 3.78943 4.69919 3.59038 4.41483L1.05071 0.786732C0.81874 0.455343 1.05582 0 1.46033 0H6.53967C6.94418 0 7.18126 0.455342 6.94929 0.786731L4.40962 4.41483Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </span>
-                </div>
 
               </th>
               <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                Status
-              </th>
-              <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                <div
-                  className="flex cursor-pointer items-center gap-3"
-                  onClick={() => sortBy("email")}
-                >
-                  <p className="text-theme-xs font-medium text-gray-500 dark:text-gray-400">
-                    Importo
-                  </p>
-                  <span className="flex flex-col gap-0.5">
-                    <svg
-                      className={
-                        sort.key === "email" && sort.asc
-                          ? "text-gray-800 dark:text-gray-400"
-                          : "text-gray-300"
-                      }
-                      width="8"
-                      height="5"
-                      viewBox="0 0 8 5"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4.40962 0.585167C4.21057 0.300808 3.78943 0.300807 3.59038 0.585166L1.05071 4.21327C0.81874 4.54466 1.05582 5 1.46033 5H6.53967C6.94418 5 7.18126 4.54466 6.94929 4.21327L4.40962 0.585167Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    <svg
-                      className={
-                        sort.key === "email" && !sort.asc
-                          ? "text-gray-800 dark:text-gray-400"
-                          : "text-gray-300"
-                      }
-                      width="8"
-                      height="5"
-                      viewBox="0 0 8 5"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4.40962 4.41483C4.21057 4.69919 3.78943 4.69919 3.59038 4.41483L1.05071 0.786732C0.81874 0.455343 1.05582 0 1.46033 0H6.53967C6.94418 0 7.18126 0.455342 6.94929 0.786731L4.40962 4.41483Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </span>
-                </div>
-
-              </th>
-              <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                <div className="relative">
-                  <span className="sr-only">Action</span>
-                </div>
+                <button className="text-gray-500 hover:text-success-500 dark:text-gray-400 dark:hover:text-success-500">
+                  <FileCheck />
+                </button>
+                <button className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500">
+                  <Trash2 />
+                </button>
               </th>
             </tr>
           </thead>
@@ -626,22 +706,19 @@ const FullTransactions2: React.FC = () => {
                         </span>
                       </span>
                     </label>
-                    <Link
-                      href="/single-transaction"
-                      className="text-theme-xs font-medium text-gray-700 group-hover:underline dark:text-gray-400"
-                    >
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
                       {row.name}
-                    </Link>
+                    </span>
                   </div>
                 </td>
                 <td className="p-4 whitespace-nowrap">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {row.description}
-                  </span>
+                  </p>
                 </td>
                 <td className="p-4 whitespace-nowrap">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {row.method}
+                    {row.account}
                   </p>
                 </td>
                 <td className="p-4 whitespace-nowrap">
@@ -657,9 +734,9 @@ const FullTransactions2: React.FC = () => {
                 <td className="p-4 whitespace-nowrap">
                   <span
                     className={`text-theme-xs rounded-full px-2 py-0.5 font-medium ${
-                      row.status === "Completed"
+                      row.status === "Conciliato"
                         ? "bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500"
-                        : row.status === "Pending"
+                        : row.status === "Non conciliato"
                         ? "bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-500"
                         : "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500"
                     }`}
@@ -718,105 +795,19 @@ const FullTransactions2: React.FC = () => {
           </tbody>
         </table>
       </div>
-      <div className="border-t border-gray-200 px-5 py-4 dark:border-gray-800">
-        <div className="flex justify-center pb-4 sm:hidden">
-          <span className="block text-sm font-medium text-gray-500 dark:text-gray-400">
-            Showing{" "}
-            <span className="text-gray-800 dark:text-white/90">
-              {startEntry}
-            </span>{" "}
-            to{" "}
-            <span className="text-gray-800 dark:text-white/90">{endEntry}</span>{" "}
-            of{" "}
-            <span className="text-gray-800 dark:text-white/90">
-              {filteredRows.length}
-            </span>
-          </span>
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="hidden sm:block">
-            <span className="block text-sm font-medium text-gray-500 dark:text-gray-400">
-              Showing{" "}
-              <span className="text-gray-800 dark:text-white/90">
-                {startEntry}
-              </span>{" "}
-              to{" "}
-              <span className="text-gray-800 dark:text-white/90">
-                {endEntry}
-              </span>{" "}
-              of{" "}
-              <span className="text-gray-800 dark:text-white/90">
-                {filteredRows.length}
-              </span>
-            </span>
+      <div className="border border-t-0 rounded-b-xl border-gray-100 py-4 pl-[18px] pr-4 dark:border-white/[0.05]">
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between">
+          {/* Left side: Showing entries */}
+          <div className="pb-3 xl:pb-0">
+            <p className="pb-3 text-sm font-medium text-center text-gray-500 border-b border-gray-100 dark:border-gray-800 dark:text-gray-400 xl:border-b-0 xl:pb-0 xl:text-left">
+              Showing {startIndex + 1} to {endIndex} of {totalEntries} entries
+            </p>
           </div>
-          <div className="flex w-full items-center justify-between gap-2 rounded-lg bg-gray-50 p-4 sm:w-auto sm:justify-normal sm:rounded-none sm:bg-transparent sm:p-0 dark:bg-gray-900 dark:sm:bg-transparent">
-            <button
-              className={`shadow-theme-xs flex items-center gap-2 rounded-lg border border-gray-300 bg-white p-2 text-gray-700 hover:bg-gray-50 hover:text-gray-800 sm:p-2.5 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 ${
-                page === 1 ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={page === 1}
-              onClick={() => page > 1 && setPage(page - 1)}
-            >
-              <svg
-                className="fill-current"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M2.58203 9.99868C2.58174 10.1909 2.6549 10.3833 2.80152 10.53L7.79818 15.5301C8.09097 15.8231 8.56584 15.8233 8.85883 15.5305C9.15183 15.2377 9.152 14.7629 8.85921 14.4699L5.13911 10.7472L16.6665 10.7472C17.0807 10.7472 17.4165 10.4114 17.4165 9.99715C17.4165 9.58294 17.0807 9.24715 16.6665 9.24715L5.14456 9.24715L8.85919 5.53016C9.15199 5.23717 9.15184 4.7623 8.85885 4.4695C8.56587 4.1767 8.09099 4.17685 7.79819 4.46984L2.84069 9.43049C2.68224 9.568 2.58203 9.77087 2.58203 9.99715C2.58203 9.99766 2.58203 9.99817 2.58203 9.99868Z"
-                  fill=""
-                />
-              </svg>
-            </button>
-            <span className="block text-sm font-medium text-gray-700 sm:hidden dark:text-gray-400">
-              Page {page} of {totalPages}
-            </span>
-            <ul className="hidden items-center gap-0.5 sm:flex">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                <li key={n}>
-                  <button
-                    onClick={() => goToPage(n)}
-                    className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium ${
-                      page === n
-                        ? "bg-brand-500 text-white"
-                        : "text-gray-700 hover:bg-brand-500 hover:text-white dark:text-gray-400 dark:hover:text-white"
-                    }`}
-                  >
-                    {n}
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <button
-              className={`shadow-theme-xs flex items-center gap-2 rounded-lg border border-gray-300 bg-white p-2 text-gray-700 hover:bg-gray-50 hover:text-gray-800 sm:p-2.5 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 ${
-                page === totalPages ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={page === totalPages}
-              onClick={() => page < totalPages && setPage(page + 1)}
-            >
-              <svg
-                className="fill-current"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M17.4165 9.9986C17.4168 10.1909 17.3437 10.3832 17.197 10.53L12.2004 15.5301C11.9076 15.8231 11.4327 15.8233 11.1397 15.5305C10.8467 15.2377 10.8465 14.7629 11.1393 14.4699L14.8594 10.7472L3.33203 10.7472C2.91782 10.7472 2.58203 10.4114 2.58203 9.99715C2.58203 9.58294 2.91782 9.24715 3.33203 9.24715L14.854 9.24715L11.1393 5.53016C10.8465 5.23717 10.8467 4.7623 11.1397 4.4695C11.4327 4.1767 11.9075 4.17685 12.2003 4.46984L17.1578 9.43049C17.3163 9.568 17.4165 9.77087 17.4165 9.99715C17.4165 9.99763 17.4165 9.99812 17.4165 9.9986Z"
-                  fill=""
-                />
-              </svg>
-            </button>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>
