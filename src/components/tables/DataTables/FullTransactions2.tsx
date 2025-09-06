@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from "react";
 import TableDropdown from "@/components/common/TableDropdown";
 import ConciliazioneFilter from "./ConciliazioneFilter";
+import FilterDropdown from "./FilterDropdown";
 import { FileCheck, Trash2, Upload } from 'lucide-react';
 import Link from "next/link";
 import Pagination from "./Pagination";
@@ -120,13 +121,15 @@ const transactionData: Transaction[] = [
     account: "Bonifico",
     category: "Assicurazioni",
     date: "30/08/2025",
-    status: "Non riconosciuto",
+    status: "Non conciliato",
     amount: "€ 320,00",
   },
 ];
 
 const FullTransactions2: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+
+  const [showFilter, setShowFilter] = React.useState(false);
 
   // Rows per page handler
   const handleRowsPerPageChange = (
@@ -172,14 +175,19 @@ const FullTransactions2: React.FC = () => {
     });
   }, [transactions, sort]);
 
-  const filteredRows: Transaction[] = useMemo(() => {
-    return sortedRows.filter(
-      (row) =>
-        row.name.toLowerCase().includes(search.toLowerCase()) ||
-        row.account.toLowerCase().includes(search.toLowerCase()) ||
-        row.category.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [sortedRows, search]);
+const filteredRows: Transaction[] = useMemo(() => {
+  return sortedRows.filter((row) => {
+    const matchesSearch =
+      row.name.toLowerCase().includes(search.toLowerCase()) ||
+      row.account.toLowerCase().includes(search.toLowerCase()) ||
+      row.category.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus =
+      filterStatus === "All" || row.status === filterStatus;
+
+    return matchesSearch && matchesStatus;
+  });
+}, [sortedRows, search, filterStatus]);
 
   const totalEntries = filteredRows.length; 
   const totalPages: number = Math.ceil(transactions.length / rowsPerPage) || 1;
@@ -342,6 +350,8 @@ const FullTransactions2: React.FC = () => {
                 <option>Last 30 Days</option>
               </select>
             </div>
+
+            <FilterDropdown showFilter={showFilter} setShowFilter={setShowFilter} />
 
             <div>
               <button className="text-gray-500 hover:text-success-500 dark:text-gray-400 dark:hover:text-success-500">
@@ -660,11 +670,13 @@ const FullTransactions2: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-x divide-y divide-gray-200 dark:divide-gray-800">
-            {paginatedRows.map((row: Transaction) => (
+            {paginatedRows.map((row: Transaction, index) => (
               <tr
                 key={row.id}
-                className="transition hover:bg-gray-50 dark:hover:bg-gray-900"
-              >
+                className={`
+                  transition hover:bg-gray-50 dark:hover:bg-gray-900
+                  ${index === paginatedRows.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}
+                `}>
                 <td className="p-4 whitespace-nowrap">
                   <div className="group flex items-center gap-3">
                     <label className="flex cursor-pointer items-center text-sm font-medium text-gray-700 select-none dark:text-gray-400">
