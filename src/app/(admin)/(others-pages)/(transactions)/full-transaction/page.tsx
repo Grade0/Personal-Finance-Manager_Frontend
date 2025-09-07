@@ -14,7 +14,6 @@ export default function TransactionPage() {
   return (
     <div>
       <PageBreadcrumb pageTitle="Storico Transazioni" />
-      <FullTransactions />
       <FullTransactions2 />
     </div>
   );
