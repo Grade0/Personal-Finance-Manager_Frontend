@@ -17,10 +17,12 @@ import { ChevronDown } from "lucide-react";
 
 export default function TransactionForm() {
   const [selectedOption, setSelectedOption] = useState<string>("expense");
+  const [message, setMessage] = useState("");
+
   const handleRadioChange = (value: string) => {
     setSelectedOption(value);
     console.log("Selected:", value);
-  }
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -33,33 +35,31 @@ export default function TransactionForm() {
     console.log("Switch is now:", checked ? "ON" : "OFF");
   };
 
-  const [message, setMessage] = useState("");
-  const categories = [
-    { value: "Affitto", label: "Laptop" },
-    { value: "Phone", label: "Phone" },
-    { value: "Watch", label: "Watch" },
-    { value: "Electronics", label: "Electronics" },
-    { value: "Accessories", label: "Accessories" },
-  ];
-  const methods = [
-    { value: "1", label: "Apple" },
-    { value: "2", label: "Samsung" },
-    { value: "3", label: "LG" },
-  ];
-  const availability = [
-    { value: "1", label: "In Stock" },
-    { value: "2", label: "Out of Stock" },
-  ];
-  const colors = [
-    { value: "1", label: "Silver" },
-    { value: "2", label: "Black" },
-    { value: "3", label: "White" },
-    { value: "4", label: "Gray" },
-  ];
-
   const handleSelectChange = (value: string) => {
     console.log("Selected value:", value);
   };
+
+  // categorie divise
+  const incomeCategories = [
+    { value: "salary", label: "Stipendio" },
+    { value: "bonus", label: "Bonus" },
+    { value: "investment", label: "Investimenti" },
+  ];
+
+  const expenseCategories = [
+    { value: "rent", label: "Affitto" },
+    { value: "grocery", label: "Spesa" },
+    { value: "shopping", label: "Shopping" },
+    { value: "transport", label: "Trasporto" },
+    { value: "health", label: "Salute" },
+  ];
+
+  const methods = [
+    { value: "1", label: "Contanti" },
+    { value: "2", label: "Unicredit" },
+    { value: "3", label: "IsyBank" },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -71,11 +71,11 @@ export default function TransactionForm() {
         <div className="p-4 sm:p-6 dark:border-gray-800">
           <form>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 col-span-full">
                 <Label className="m-0">Tipo Transazione:</Label>
                 <div className="flex flex-wrap items-center gap-4">
                   <Radio
-                    id="Free"
+                    id="Income"
                     name="roleSelect"
                     value="income"
                     label="Entrata"
@@ -83,43 +83,87 @@ export default function TransactionForm() {
                     onChange={handleRadioChange}
                   />
                   <Radio
-                    id="Premium"
+                    id="Expense"
                     name="roleSelect"
                     value="expense"
                     label="Uscita"
                     checked={selectedOption === "expense"}
                     onChange={handleRadioChange}
                   />
+                  <Radio
+                    id="Transfer"
+                    name="roleSelect"
+                    value="transfer"
+                    label="Trasferimento"
+                    checked={selectedOption === "transfer"}
+                    onChange={handleRadioChange}
+                  />
                 </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <Label>Conciliazione bancaria: </Label>
-                <Switch
-                  label="Conciliato"
-                  defaultChecked={false}
-                  onChange={handleSwitchChange}
-                />
               </div>
 
               <div>
                 <Label>Voce</Label>
                 <Input placeholder="Enter product name" />
               </div>{" "}
+
               <div>
-                <Label>Categoria</Label>
-                <div className="relative">
-                  <Select
-                    options={categories}
-                    placeholder="Select a category"
-                    onChange={handleSelectChange}
-                    defaultValue=""
-                  />
-                  <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-                    <ChevronDown/>
-                  </span>
-                </div>
+                <Label>Importo</Label>
+                <Input type="number" placeholder="Enter product name" />
+              </div>{" "}
+
+              <div>
+                {selectedOption === "income" && (
+                  <>
+                    <Label>Categoria (Entrata)</Label>
+                    <div className="relative">
+                      <Select
+                        options={incomeCategories}
+                        placeholder="Seleziona categoria"
+                        onChange={handleSelectChange}
+                        defaultValue=""
+                      />
+                      <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+                        <ChevronDown />
+                      </span>
+                    </div>
+                  </>
+                )}
+
+                {selectedOption === "expense" && (
+                  <>
+                    <Label>Categoria (Uscita)</Label>
+                    <div className="relative">
+                      <Select
+                        options={expenseCategories}
+                        placeholder="Seleziona categoria"
+                        onChange={handleSelectChange}
+                        defaultValue=""
+                      />
+                      <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+                        <ChevronDown />
+                      </span>
+                    </div>
+                  </>
+                )}
+
+                {selectedOption === "transfer" && (
+                  <>
+                    <Label>Conto Destinatario</Label>
+                    <div className="relative">
+                      <Select
+                        options={methods}
+                        placeholder="Seleziona conto"
+                        onChange={handleSelectChange}
+                        defaultValue=""
+                      />
+                      <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+                        <ChevronDown />
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
+
               <div>
                 <Label>Metodo</Label>
                 <div className="relative">

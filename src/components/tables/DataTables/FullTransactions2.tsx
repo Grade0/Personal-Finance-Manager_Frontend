@@ -1,11 +1,12 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import TableDropdown from "@/components/common/TableDropdown";
-import ConciliazioneFilter from "./ConciliazioneFilter";
+import TypeFilter from "./TypeFilter";
 import FilterDropdown from "./FilterDropdown";
 import { FileCheck, Trash2, Upload } from 'lucide-react';
 import Link from "next/link";
 import Pagination from "./Pagination";
+import Button from "@/components/ui/button/Button";
 
 interface Transaction {
   id: number;
@@ -14,6 +15,7 @@ interface Transaction {
   account: string;
   category: number;
   date: string;
+  type: "income" | "expense" | "refund";
   status: "Conciliato" | "Non conciliato";
   amount: string;
 }
@@ -31,8 +33,9 @@ const transactionData: Transaction[] = [
     account: "Unicredit",
     category: "Abbonamento",
     date: "01/08/2025",
+    type: "expense",
     status: "Conciliato",
-    amount: "€ 2,99",
+    amount: "-€ 2,99",
   },
   {
     id: 2,
@@ -41,8 +44,9 @@ const transactionData: Transaction[] = [
     account: "Intesa Sanpaolo",
     category: "Abbonamento",
     date: "03/08/2025",
+    type: "expense",
     status: "Conciliato",
-    amount: "€ 9,99",
+    amount: "-€ 9,99",
   },
   {
     id: 3,
@@ -51,8 +55,9 @@ const transactionData: Transaction[] = [
     account: "Carta di debito",
     category: "Spesa",
     date: "05/08/2025",
+    type: "expense",
     status: "Conciliato",
-    amount: "€ 75,45",
+    amount: "-€ 75,45",
   },
   {
     id: 4,
@@ -60,19 +65,21 @@ const transactionData: Transaction[] = [
     description: "Biglietto treno Roma-Milano",
     account: "Carta di credito",
     category: "Trasporti",
-    date: "10/08/2025",
+    date: "08/08/2025",
+    type: "expense",
     status: "Non conciliato",
-    amount: "€ 49,90",
+    amount: "-€ 49,90",
   },
   {
     id: 5,
-    name: "Spotify",
-    description: "Abbonamento mensile streaming musicale",
+    name: "Stipendio",
+    description: "Mensilità agosto 2025",
     account: "Paypal",
     category: "Abbonamento",
-    date: "12/08/2025",
+    date: "10/08/2025",
+    type: "income",
     status: "Non conciliato",
-    amount: "€ 4,99",
+    amount: "€ 1000",
   },
   {
     id: 6,
@@ -81,8 +88,9 @@ const transactionData: Transaction[] = [
     account: "Carta di credito",
     category: "Abbigliamento",
     date: "16/08/2025",
+    type: "expense",
     status: "Non conciliato",
-    amount: "€ 89,50",
+    amount: "-€ 89,50",
   },
   {
     id: 7,
@@ -91,16 +99,18 @@ const transactionData: Transaction[] = [
     account: "RID",
     category: "Utenze",
     date: "18/08/2025",
+    type: "expense",
     status: "Non conciliato",
-    amount: "€ 65,20",
+    amount: "-€ 65,20",
   },
   {
     id: 8,
-    name: "Amazon",
-    description: "Acquisto libro e accessori elettronici",
+    name: "Rimborso Amazon",
+    description: "Reso del libro",
     account: "Carta di debito",
     category: "E-commerce",
     date: "20/08/2025",
+    type: "refund",
     status: "Non conciliato",
     amount: "€ 42,75",
   },
@@ -111,8 +121,9 @@ const transactionData: Transaction[] = [
     account: "Carta prepagata",
     category: "Ristoranti",
     date: "22/08/2025",
+    type: "expense",
     status: "Non conciliato",
-    amount: "€ 15,60",
+    amount: "-€ 15,60",
   },
   {
     id: 10,
@@ -121,8 +132,9 @@ const transactionData: Transaction[] = [
     account: "Bonifico",
     category: "Assicurazioni",
     date: "30/08/2025",
+    type: "expense",
     status: "Non conciliato",
-    amount: "€ 320,00",
+    amount: "-€ 320,00",
   },
 ];
 
@@ -149,15 +161,15 @@ const FullTransactions2: React.FC = () => {
     asc: false,
   });
 
-  const [filterStatus, setFilterStatus] = useState<
-    "All" | "Conciliato" | "Non conciliato"
-  >("All");
+  const [filterType, setFilterType] = useState<
+    "all" | "income" | "expense"
+  >("all");
 
   const filteredTransactions: Transaction[] = useMemo(() => {
-    return filterStatus === "All"
+    return filterType === "all"
       ? transactions
-      : transactions.filter((transaction) => transaction.status === filterStatus);
-  }, [transactions, filterStatus]);
+      : transactions.filter((transaction) => transaction.type === FilterType);
+  }, [transactions, filterType]);
 
   const [currentPage, setCurrentPage] = React.useState<number>(1);
   const [search, setSearch] = React.useState<string>("");
@@ -182,12 +194,12 @@ const filteredRows: Transaction[] = useMemo(() => {
       row.account.toLowerCase().includes(search.toLowerCase()) ||
       row.category.toLowerCase().includes(search.toLowerCase());
 
-    const matchesStatus =
-      filterStatus === "All" || row.status === filterStatus;
+    const matchesType =
+      filterType === "all" || row.type === filterType;
 
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesType;
   });
-}, [sortedRows, search, filterStatus]);
+}, [sortedRows, search, filterType]);
 
   const totalEntries = filteredRows.length; 
   const totalPages: number = Math.ceil(transactions.length / rowsPerPage) || 1;
@@ -250,6 +262,58 @@ const filteredRows: Transaction[] = useMemo(() => {
 
   return (
     <div className="text-sm overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+      <div className="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+            Transazioni
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            La lista delle transazioni più recenti
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <Button variant="outline">
+            Export
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+            >
+              <path
+                d="M16.667 13.3333V15.4166C16.667 16.1069 16.1074 16.6666 15.417 16.6666H4.58295C3.89259 16.6666 3.33295 16.1069 3.33295 15.4166V13.3333M10.0013 13.3333L10.0013 3.33325M6.14547 9.47942L9.99951 13.331L13.8538 9.47942"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Button>
+          <Link
+            href="/add-transaction"
+            className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+            >
+              <path
+                d="M5 10.0002H15.0006M10.0002 5V15.0006"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Nuova transazione
+          </Link>
+        </div>
+      </div>
       <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
         <div className="flex items-center gap-3">
           <span className="text-gray-500 dark:text-gray-400"> Show </span>
@@ -301,9 +365,9 @@ const filteredRows: Transaction[] = useMemo(() => {
         </div>
         <div className="flex gap-3.5">
 
-          <ConciliazioneFilter
-            filterStatus={filterStatus}
-            setFilterStatus={setFilterStatus}
+          <TypeFilter
+            filterType={filterType}
+            setFilterType={setFilterType}
             setCurrentPage={setCurrentPage}
           />
 
@@ -361,12 +425,6 @@ const filteredRows: Transaction[] = useMemo(() => {
             <div>
               <button className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500">
                 <Trash2 />
-              </button>
-            </div>
-
-            <div>
-              <button className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90">
-                <Upload />
               </button>
             </div>
           </div>
@@ -660,12 +718,6 @@ const filteredRows: Transaction[] = useMemo(() => {
 
               </th>
               <th className="p-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                <button className="text-gray-500 hover:text-success-500 dark:text-gray-400 dark:hover:text-success-500">
-                  <FileCheck />
-                </button>
-                <button className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500">
-                  <Trash2 />
-                </button>
               </th>
             </tr>
           </thead>
@@ -757,9 +809,15 @@ const filteredRows: Transaction[] = useMemo(() => {
                   </span>
                 </td>
                 <td className="p-4 whitespace-nowrap">
-                  <p className="text-sm text-gray-700 dark:text-gray-400">
+                  <span
+                    className={`text-theme-xs rounded-full px-2 py-0.5 font-medium ${
+                      row.type === "income" || row.type === "refund"
+                        ? " text-success-700 dark:text-success-500"
+                        : " text-red-700 dark:text-red-500"
+                    }`}
+                  >
                     {row.amount}
-                  </p>
+                  </span>
                 </td>
                 <td className="p-4 whitespace-nowrap">
                   <div className="relative inline-block">
