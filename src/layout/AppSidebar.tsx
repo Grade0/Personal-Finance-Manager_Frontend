@@ -17,7 +17,7 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
-import { ChartNoAxesCombined, ClipboardList } from 'lucide-react';
+import { ChartNoAxesCombined, ClipboardList, Wallet } from 'lucide-react';
 import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
@@ -45,6 +45,11 @@ const navItems: NavItem[] = [
       { name: "Aggiungi transazione", path: "/add-transaction", pro: false },
       { name: "Storico transazioni", path: "/full-transaction", pro: false }
     ],
+  },
+  {
+    icon: <Wallet />,
+    name: "Conti",
+    path: "/account",
   },
   {
     icon: <CalenderIcon />,
