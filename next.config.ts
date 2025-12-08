@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -8,6 +9,22 @@ const nextConfig: NextConfig = {
       use: ["@svgr/webpack"],
     });
     return config;
+  },
+  images: {
+    localPatterns:[
+      {
+        pathname: '/**',
+      },
+    ]
+  },
+  turbopack: {
+    root: path.join(__dirname),
+    rules: {
+      "*.svg": {
+        loaders: ["@svgr/webpack"],
+        as: "*.js",
+      },
+    },
   },
 };
 

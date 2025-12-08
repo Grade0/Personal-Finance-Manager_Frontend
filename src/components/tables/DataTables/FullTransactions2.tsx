@@ -13,7 +13,7 @@ interface Transaction {
   name: string;
   description: string;
   account: string;
-  category: number;
+  category: string;
   date: string;
   type: "income" | "expense" | "refund";
   status: "Conciliato" | "Non conciliato";
@@ -168,7 +168,7 @@ const FullTransactions2: React.FC = () => {
   const filteredTransactions: Transaction[] = useMemo(() => {
     return filterType === "all"
       ? transactions
-      : transactions.filter((transaction) => transaction.type === FilterType);
+      : transactions.filter((transaction) => transaction.type === filterType);
   }, [transactions, filterType]);
 
   const [currentPage, setCurrentPage] = React.useState<number>(1);
@@ -189,14 +189,18 @@ const FullTransactions2: React.FC = () => {
 
 const filteredRows: Transaction[] = useMemo(() => {
   return sortedRows.filter((row) => {
+
+    // Verifica se il testo cercato è contenuto in almeno uno di questi tre campi
     const matchesSearch =
       row.name.toLowerCase().includes(search.toLowerCase()) ||
       row.account.toLowerCase().includes(search.toLowerCase()) ||
       row.category.toLowerCase().includes(search.toLowerCase());
 
+    // Se filterType === "all", accetta tutti i tipi, altrimenti solo del tipo ("income", "expense", "transfer") selezionato
     const matchesType =
       filterType === "all" || row.type === filterType;
 
+    // Restituisce solo le righe che soddifano la ricerca e il tipo selezionato
     return matchesSearch && matchesType;
   });
 }, [sortedRows, search, filterType]);
