@@ -12,10 +12,10 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 
 export default function MonthlySalesChart() {
   const options: ApexOptions = {
-    colors: ["#465fff", "#ff4560"], // blu per entrata, rosso per uscita
+    colors: ["#ff4560"], // blu per entrata, rosso per uscita
     chart: {
       fontFamily: "Outfit, sans-serif",
-      type: "bar",
+      type: "line",
       height: 180,
       toolbar: {
         show: false,
@@ -35,7 +35,11 @@ export default function MonthlySalesChart() {
     stroke: {
       show: true,
       width: 4,
-      colors: ["transparent"],
+       curve: 'smooth',
+      colors: ["#ff4560"],
+    },
+    markers: {
+      size: 0,
     },
     xaxis: {
       categories: [
@@ -73,10 +77,6 @@ export default function MonthlySalesChart() {
 
   const series = [
     {
-      name: "Entrata",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
-    },
-    {
       name: "Uscita",
       data: [120, 250, 180, 210, 160, 175, 200, 90, 180, 320, 260, 100],
     },
@@ -96,7 +96,7 @@ export default function MonthlySalesChart() {
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Entrate vs Uscite
+          Distribuzione uscite del mese
         </h3>
 
         <div className="relative inline-block">
@@ -129,7 +129,7 @@ export default function MonthlySalesChart() {
           <ReactApexChart
             options={options}
             series={series}
-            type="bar"
+            type="line"
             height={350}
           />
         </div>
