@@ -116,25 +116,25 @@ const transactionData: Transaction[] = [
   },
   {
     id: 9,
-    name: "McDonald's",
-    description: "Pranzo veloce",
-    account: "Carta prepagata",
-    category: "Ristoranti",
+    name: "Giroconto",
+    description: "Sbloccare liquidità da risparmio",
+    account: "Risparmio",
+    category: "Trasferimento",
     date: "22/08/2025",
-    type: "expense",
+    type: "transfer",
     status: "Non conciliato",
-    amount: "-€ 15,60",
+    amount: "-€ 100,00",
   },
   {
     id: 10,
-    name: "Assicurazione auto",
-    description: "Pagamento semestrale",
-    account: "Bonifico",
-    category: "Assicurazioni",
-    date: "30/08/2025",
-    type: "expense",
+    name: "Giroconto",
+    description: "Sbloccare liquidità da risparmio",
+    account: "Contanti",
+    category: "Trasferimento",
+    date: "22/08/2025",
+    type: "transfer",
     status: "Non conciliato",
-    amount: "-€ 320,00",
+    amount: "€ 100,00",
   },
 ];
 
@@ -162,9 +162,10 @@ const FullTransactions2: React.FC = () => {
   });
 
   const [filterType, setFilterType] = useState<
-    "all" | "income" | "expense"
+    "all" | "income" | "expense" | "transfer"
   >("all");
 
+  // per filtrare il tipo di transazione se è un entrata, uscita o transfer
   const filteredTransactions: Transaction[] = useMemo(() => {
     return filterType === "all"
       ? transactions
@@ -187,6 +188,7 @@ const FullTransactions2: React.FC = () => {
     });
   }, [transactions, sort]);
 
+// per filtrare in base alla ricerca su nome, conto e categoria
 const filteredRows: Transaction[] = useMemo(() => {
   return sortedRows.filter((row) => {
 
@@ -816,8 +818,10 @@ const filteredRows: Transaction[] = useMemo(() => {
                   <span
                     className={`text-theme-xs rounded-full px-2 py-0.5 font-medium ${
                       row.type === "income" || row.type === "refund"
-                        ? " text-success-700 dark:text-success-500"
-                        : " text-red-700 dark:text-red-500"
+                        ? "text-success-700 dark:text-success-500"
+                        : row.type === "transfer"
+                        ? "text-gray-700 dark:text-gray-500"
+                        : "text-red-700 dark:text-red-500"
                     }`}
                   >
                     {row.amount}

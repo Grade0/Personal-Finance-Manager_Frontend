@@ -2,7 +2,7 @@
 import React from "react";
 
 interface TypeFilterProps {
-  filterType: "all" | "income" | "expense";
+  filterType: "all" | "income" | "expense" | "transfer";
   setFilterType: (type: filterType) => void;
   setCurrentPage: (page: number) => void;
 }
@@ -51,7 +51,20 @@ const TypeFilter: React.FC<ConciliazioneFilterProps> = ({
             : "text-gray-500 dark:text-gray-400"
         }`}
       >
-        Uscites
+        Uscite
+      </button>
+      <button
+        onClick={() => {
+          setFilterType("transfer");
+          setCurrentPage(1);
+        }}
+        className={`text-theme-sm h-10 rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white ${
+          filterType === "transfer"
+            ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
+            : "text-gray-500 dark:text-gray-400"
+        }`}
+      >
+        Transfer
       </button>
     </div>
   );
